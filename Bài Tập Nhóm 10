@@ -1,52 +1,53 @@
-def tinh_o_an_toan(kich_thuoc_ban_co, danh_sach_xe):
-    """
-    Hàm tính toán logic (giữ nguyên như cũ)
-    """
-    hang_bi_chiem = set()
-    cot_bi_chiem = set()
+def safe_squares(n, rooks):
+    unsafe_rows = set()
+    unsafe_cols = set()
+    for rook in rooks:
+        unsafe_rows.add(rook[0])
+        unsafe_cols.add(rook[1])
+    safe_rows = n - len(unsafe_rows)
+    safe_cols = n - len(unsafe_cols)
+    return safe_rows * safe_cols
 
-    for hang, cot in danh_sach_xe:
-        hang_bi_chiem.add(hang)
-        cot_bi_chiem.add(cot)
-
-    so_hang_an_toan = kich_thuoc_ban_co - len(hang_bi_chiem)
-    so_cot_an_toan = kich_thuoc_ban_co - len(cot_bi_chiem)
-
-    return so_hang_an_toan * so_cot_an_toan
-
-print("=== CHƯƠNG TRÌNH TÍNH Ô AN TOÀN TRÊN BÀN CỜ ===")
-
+# Nhập dữ liệu từ bàn phím
 try:
-    # 1. Nhập kích thước n
-    n = int(input("1. Nhập kích thước bàn cờ (n): "))
-
-    # 2. Nhập số lượng xe
-    so_luong_xe = int(input("2. Bạn muốn đặt bao nhiêu quân xe?: "))
-
-    danh_sach_xe_nhap = []
-
-    # 3. Vòng lặp để nhập toạ độ từng xe
-    print("3. Nhập toạ độ cho từng xe (Hàng và Cột cách nhau bởi dấu cách, ví dụ: 2 3)")
-    for i in range(so_luong_xe):
-        # Đọc chuỗi nhập vào và tách thành list. Ví dụ nhập "2 3" -> ['2', '3']
-        chuoi_nhap = input(f"   - Toạ độ xe thứ {i+1}: ")
-        
-        # Tách chuỗi bằng khoảng trắng
-        cac_phan_tu = chuoi_nhap.split() 
-        
-        # Chuyển đổi sang số nguyên
-        hang = int(cac_phan_tu[0])
-        cot = int(cac_phan_tu[1])
-        
-        # Thêm vào danh sách
-        danh_sach_xe_nhap.append((hang, cot))
-
-    ket_qua = tinh_o_an_toan(n, danh_sach_xe_nhap)
+    n = int(input("Nhập kích thước bàn cờ n: "))
+    if n <= 0:
+        print("Kích thước bàn cờ phải là số nguyên dương!")
+        exit()
     
-    print("-" * 30)
-    print(f"Tổng số ô an toàn là: {ket_qua}")
+    num_rooks = int(input("Nhập số lượng quân xe: "))
+    if num_rooks < 0:
+        print("Số lượng quân xe không thể âm!")
+        exit()
+    
+    rooks = []
+    print("Nhập tọa độ các quân xe (hàng cột), mỗi quân xe trên một dòng:")
+    for i in range(num_rooks):
+        while True:
+            try:
+                line = input(f"Quân xe {i+1}: ").strip()
+                # Xử lý đầu vào có thể là: "2,3" hoặc "2 3" hoặc "(2,3)"
+                line = line.replace('(', '').replace(')', '').replace(',', ' ')
+                parts = line.split()
+                if len(parts) != 2:
+                    print("Vui lòng nhập đúng định dạng: hàng cột (hoặc hàng,cột)")
+                    continue
+                row = int(parts[0])
+                col = int(parts[1])
+                
+                # Kiểm tra tọa độ có hợp lệ không
+                if row < 0 or row >= n or col < 0 or col >= n:
+                    print(f"Tọa độ phải nằm trong phạm vi từ 0 đến {n-1}")
+                    continue
+                    
+                rooks.append((row, col))
+                break
+            except ValueError:
+                print("Vui lòng nhập số nguyên hợp lệ!")
+    
+    # Tính toán và in kết quả
+    result = safe_squares(n, rooks)
+    print(f"\nSố ô an toàn trên bàn cờ {n}x{n}: {result}")
 
 except ValueError:
-    print("Lỗi: Bạn vui lòng nhập đúng định dạng số!")
-except IndexError:
-    print("Lỗi: Bạn cần nhập đủ cả Hàng và Cột (ví dụ: 2 3)")
+    print("Vui lòng nhập số nguyên hợp lệ!")
